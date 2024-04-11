@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  pseudo   String    @unique
+  password String
+  role     Role      @default(ACTOR)
+  posts    Post[]
+  comments Comment[]
+}
+
+model Post {
+  id          Int         @id @default(autoincrement())
+  title       String
+  body        Paragraph[]
+  date        DateTime
+  area        String
+  videos      Video[]
+  recordings  Record[]
+  picto       String
+  photos      Photo[]
+  description String?
+  author      User        @relation(fields: [authorId], references: [id])
+  authorId    Int
+  comments    Comment[]
+  visibility  Boolean     @default(true)
+  themeColor  String      @default("purple")
+}
+
+model Photo {
+  id       Int    @id @default(autoincrement())
+  url      String
+  size     Json
+  position Json
+  rotation Float
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+}
+
+model Video {
+  id       Int    @id @default(autoincrement())
+  url      String
+  size     Json
+  position Json
+  rotation Float
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+}
+
+model Record {
+  id       Int    @id @default(autoincrement())
+  url      String
+  size     Json
+  position Json
+  rotation Float
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+}
+
+model Paragraph {
+  id       Int    @id @default(autoincrement())
+  text     String
+  size     Json
+  position Json
+  rotation Float
+  font     String
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  text       String
+  videos     String[]
+  recordings String[]
+  photos     String[]
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   Int
+  visibility Boolean  @default(true)
+  postId     Int
+  post       Post     @relation(fields: [postId], references: [id])
+}
+
+enum Role {
+  ACTOR
+  ADMIN
+}
